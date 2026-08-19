@@ -12,6 +12,7 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 - **Calendar view** — see at a glance which days had milk and how much.
 - **History** — browse past months and jump back to any bill.
 - **Auth** — register/login with username + password.
+- **Milkman / client roles** — milkmen can link client accounts, set a shared rate, and manage each client's ledger.
 - **PWA** — installable from the browser, offline app-shell caching, home-screen icon.
 - **Responsive, dark UI** — Tailwind + custom glassmorphism components.
 
@@ -46,7 +47,7 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 │   ├── components/         # UI kit + MilkBottle SVG
 │   ├── hooks/              # useAuth, use-mobile
 │   ├── lib/                # milk formatting/date helpers
-│   ├── pages/              # Home, Login, Dashboard, NotFound
+│   ├── pages/              # Home, Login, Dashboard, Clients, ClientLedger, NotFound
 │   ├── providers/          # tRPC provider
 │   ├── sections/           # FluidSubconscious WebGL hero
 │   └── ...                 # styles, config, main entry
