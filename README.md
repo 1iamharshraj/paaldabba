@@ -56,7 +56,6 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 ├── drizzle.config.ts
 ├── package.json
 ├── vercel.json             # Vercel deployment config
-├── index.ts                # Vercel serverless function entry
 └── vite.config.ts
 ```
 
@@ -147,7 +146,7 @@ The repo includes a `vercel.json` configured for a Vite frontend + Hono serverle
 3. Vercel will auto-detect Vite and run `npm run build`.
    - Frontend static files are output to `dist/`
    - Backend is bundled to `dist/server/boot.js` for Node/Docker
-   - Vercel deploys `index.ts` as the serverless function
+   - Vercel deploys `api/index.ts` as the serverless function
 4. Push a branch; Vercel builds previews automatically.
 5. For local Vercel testing, install the [Vercel CLI](https://vercel.com/docs/cli) and run:
 
