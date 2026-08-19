@@ -11,7 +11,7 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 - **Month-end bill** — totals, per-day breakdowns, and a “mark as paid” action.
 - **Calendar view** — see at a glance which days had milk and how much.
 - **History** — browse past months and jump back to any bill.
-- **Auth** — register/login with username + password, or sign in via Kimi OAuth.
+- **Auth** — register/login with username + password.
 - **PWA** — installable from the browser, offline app-shell caching, home-screen icon.
 - **Responsive, dark UI** — Tailwind + custom glassmorphism components.
 
@@ -22,7 +22,7 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 | Frontend | React 19, TypeScript, Vite, React Router v7, Tailwind CSS v3, shadcn/ui, TanStack Query, tRPC |
 | Backend | Hono, tRPC, Node.js |
 | Database | MySQL / PlanetScale, Drizzle ORM |
-| Auth | scrypt password hashing, JWT session cookies (`kimi_sid`), optional Kimi OAuth |
+| Auth | scrypt password hashing, JWT session cookies (`sid`) |
 | Build | Vite (client) + esbuild (server bundle) |
 | Container | Dockerfile multi-stage build |
 
@@ -34,8 +34,7 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 │   ├── auth-router.ts      # username/password auth
 │   ├── boot.ts             # app entry + static file serving
 │   ├── context.ts          # tRPC context
-│   ├── kim/                # Kimi OAuth + session helpers
-│   ├── lib/                # env, cookies, HTTP client, Vite static helper
+│   ├── lib/                # env, cookies, session/auth helpers, Vite static helper
 │   ├── middleware.ts       # tRPC init + auth middleware
 │   ├── milkRouter.ts       # milk ledger procedures
 │   ├── queries/            # DB query helpers
@@ -98,11 +97,6 @@ See `.env.example` for the full list:
 | `APP_ID` | Application ID |
 | `APP_SECRET` | Used to sign JWT session cookies |
 | `DATABASE_URL` | MySQL connection string, e.g. `mysql://user:pass@host:port/db` |
-| `KIMI_AUTH_URL` | Kimi OAuth server URL (backend) |
-| `KIMI_OPEN_URL` | Kimi Open Platform URL |
-| `VITE_KIMI_AUTH_URL` | Same OAuth server URL, exposed to the browser |
-| `VITE_APP_ID` | OAuth application ID, exposed to the browser |
-| `OWNER_UNION_ID` | Union ID that automatically receives the `admin` role on first login |
 
 ## Scripts
 
@@ -142,7 +136,6 @@ docker run -p 3000:3000 --env-file .env paaldabba
 
 - The production server needs the environment variables listed above.
 - Make sure `APP_SECRET` is a strong, random value.
-- `OWNER_UNION_ID` is only consulted on first login/upsert; set it before the owner signs in.
 - The included service worker (`public/sw.js`) caches the app shell and navigates offline back to `/`.
 
 ## License

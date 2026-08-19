@@ -26,7 +26,7 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
 
-  // API + OAuth: always go to the network, never cache.
+  // API routes: always go to the network, never cache.
   if (url.pathname.startsWith("/api/")) return;
 
   // Navigations: network-first, fall back to cached shell when offline.

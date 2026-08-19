@@ -8,7 +8,7 @@ import { createRouter, authedQuery, publicQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { users } from "@db/schema";
 import { eq } from "drizzle-orm";
-import { signSessionToken } from "./kimi/session";
+import { signSessionToken } from "./lib/session";
 import { env } from "./lib/env";
 
 // ---- password hashing (scrypt, node:crypto) ----
@@ -91,13 +91,10 @@ export const authRouter = createRouter({
         });
       }
 
-      const role =
-        env.ownerUnionId && env.ownerUnionId === unionId ? "admin" : "user";
       await db.insert(users).values({
         unionId,
         name: input.displayName?.trim() || input.username,
         passwordHash: hashPassword(input.password),
-        role,
       });
 
       const token = await signSessionToken({ unionId, clientId: env.appId });
