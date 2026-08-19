@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import FluidSubconscious from '../sections/FluidSubconscious'
 import { useAuth } from '@/hooks/useAuth'
+import { CLIENTS_PATH } from '@/const'
 
 const features = [
   {
@@ -22,7 +23,7 @@ const features = [
 ]
 
 export default function Home() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
 
   return (
     <div className="relative min-h-screen bg-black text-white">
@@ -38,12 +39,22 @@ export default function Home() {
             <img src="/icons/icon-192.png" alt="MilkTrack" className="w-7 h-7 rounded-lg" />
             MILKTRACK
           </div>
-          <Link
-            to={isAuthenticated ? '/dashboard' : '/login'}
-            className="font-mono-data text-[11px] sm:text-xs tracking-[0.2em] uppercase px-4 py-2 rounded-full milk-chip"
-          >
-            {isAuthenticated ? 'Open app' : 'Sign in'}
-          </Link>
+          <div className="flex items-center gap-3">
+            {isAuthenticated && user?.role === 'milkman' && (
+              <Link
+                to={CLIENTS_PATH}
+                className="font-mono-data text-[11px] sm:text-xs tracking-[0.2em] uppercase px-4 py-2 rounded-full milk-chip"
+              >
+                Clients
+              </Link>
+            )}
+            <Link
+              to={isAuthenticated ? '/dashboard' : '/login'}
+              className="font-mono-data text-[11px] sm:text-xs tracking-[0.2em] uppercase px-4 py-2 rounded-full milk-chip"
+            >
+              {isAuthenticated ? 'Open app' : 'Sign in'}
+            </Link>
+          </div>
         </header>
 
         {/* hero */}

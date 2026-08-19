@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { trpc } from "@/providers/trpc";
 
 type Mode = "login" | "register";
+type Role = "milkman" | "client";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [role, setRole] = useState<Role>("milkman");
+  const [milkmanUsername, setMilkmanUsername] = useState("");
   const [error, setError] = useState("");
 
   const onSuccess = async () => {
@@ -38,6 +41,9 @@ export default function Login() {
         username: username.trim(),
         password,
         displayName: displayName.trim() || undefined,
+        role,
+        milkmanUsername:
+          role === "client" ? milkmanUsername.trim() || undefined : undefined,
       });
     }
   };
@@ -87,14 +93,45 @@ export default function Login() {
 
         <div className="space-y-3">
           {mode === "register" && (
-            <input
-              type="text"
-              placeholder="Display name (optional)"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              maxLength={64}
-              className="w-full rounded-2xl border border-[#f5eedc]/20 bg-[#f5eedc]/5 px-4 py-3.5 font-geist-mono text-sm text-white outline-none placeholder:text-white/30 focus:border-[#f5eedc]/50 transition-colors"
-            />
+            <>
+              <input
+                type="text"
+                placeholder="Display name (optional)"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                maxLength={64}
+                className="w-full rounded-2xl border border-[#f5eedc]/20 bg-[#f5eedc]/5 px-4 py-3.5 font-geist-mono text-sm text-white outline-none placeholder:text-white/30 focus:border-[#f5eedc]/50 transition-colors"
+              />
+              <div className="grid grid-cols-2 gap-1 p-1 rounded-full bg-[#f5eedc]/[0.06] border border-[#f5eedc]/10">
+                {(["milkman", "client"] as Role[]).map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => {
+                      setRole(r);
+                      setError("");
+                    }}
+                    className={`rounded-full py-2 font-mono-data text-[11px] tracking-[0.15em] uppercase transition-all ${
+                      role === r
+                        ? "bg-[#f5eedc] text-[#141311] font-bold"
+                        : "text-white/50 hover:text-white/80"
+                    }`}
+                  >
+                    {r === "milkman" ? "Milkman" : "Client"}
+                  </button>
+                ))}
+              </div>
+              {role === "client" && (
+                <input
+                  type="text"
+                  placeholder="Milkman username (optional)"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  value={milkmanUsername}
+                  onChange={(e) => setMilkmanUsername(e.target.value)}
+                  className="w-full rounded-2xl border border-[#f5eedc]/20 bg-[#f5eedc]/5 px-4 py-3.5 font-geist-mono text-sm text-white outline-none placeholder:text-white/30 focus:border-[#f5eedc]/50 transition-colors"
+                />
+              )}
+            </>
           )}
           <input
             type="text"

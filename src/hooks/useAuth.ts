@@ -48,6 +48,7 @@ export function useAuth(options?: UseAuthOptions) {
     () => ({
       user: user ?? null,
       isAuthenticated: !!user,
+      isMilkman: user?.role === "milkman",
       isLoading: isLoading || logoutMutation.isPending,
       error,
       logout,
