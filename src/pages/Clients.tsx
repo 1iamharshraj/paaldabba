@@ -180,7 +180,7 @@ export default function Clients() {
                   {client.name ?? client.unionId}
                 </div>
                 <div className="font-mono-data text-[10px] text-white/50 mt-1">
-                  {formatMl(client.summary.totalMl)} · {formatMoney(client.summary.totalCents, 'INR')}
+                  {formatMl(client.summary.totalMl)} · {formatMoney(client.summary.totalCents, client.summary.currency ?? 'INR')}
                   {' · '}
                   <span className={client.summary.paid ? 'text-emerald-300/90' : 'text-amber-200/80'}>
                     {client.summary.paid ? 'paid' : 'due'}

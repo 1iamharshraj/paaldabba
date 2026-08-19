@@ -99,12 +99,14 @@ async function buildMonthSummary(userId: number, month: string) {
     (sum, e) => sum + entryCostCents(e.quantityMl, e.pricePerLiterCents),
     0,
   );
+  const settings = await getUserEffectiveSettings(userId);
 
   return {
     totalMl,
     totalCents,
     paid: !!payment,
     paidAt: payment?.paidAt ?? null,
+    currency: settings.currency,
   };
 }
 

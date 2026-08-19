@@ -11,5 +11,5 @@ export default function ClientLedger() {
       </div>
     )
   }
-  return <LedgerView userId={id} editable={false} />
+  return <LedgerView userId={id} editable={true} />
 }
