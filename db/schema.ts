@@ -1,0 +1,98 @@
+import {
+  mysqlTable,
+  mysqlEnum,
+  serial,
+  varchar,
+  text,
+  timestamp,
+  bigint,
+  int,
+  uniqueIndex,
+  index,
+} from "drizzle-orm/mysql-core";
+
+export const users = mysqlTable("users", {
+  id: serial("id").primaryKey(),
+  unionId: varchar("unionId", { length: 255 }).notNull().unique(),
+  name: varchar("name", { length: 255 }),
+  email: varchar("email", { length: 320 }),
+  /** scrypt password hash (format: salt:hash, hex). Null for OAuth-only users. */
+  passwordHash: text("passwordHash"),
+  avatar: text("avatar"),
+  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()),
+  lastSignInAt: timestamp("lastSignInAt").defaultNow().notNull(),
+});
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
+
+// ---- MilkTrack tables ----
+
+/** Per-user configuration: milk price (in currency cents per litre) + currency code. */
+export const milkSettings = mysqlTable(
+  "milk_settings",
+  {
+    id: serial("id").primaryKey(),
+    userId: bigint("userId", { mode: "number", unsigned: true }).notNull(),
+    pricePerLiterCents: int("pricePerLiterCents").notNull().default(6000),
+    currency: varchar("currency", { length: 8 }).notNull().default("INR"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt")
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => ({
+    userIdx: uniqueIndex("milk_settings_user_idx").on(t.userId),
+  }),
+);
+
+/** A single milk purchase. Price is snapshotted per entry so rate changes don't rewrite history. */
+export const milkEntries = mysqlTable(
+  "milk_entries",
+  {
+    id: serial("id").primaryKey(),
+    userId: bigint("userId", { mode: "number", unsigned: true }).notNull(),
+    /** Local calendar day, format YYYY-MM-DD */
+    entryDate: varchar("entryDate", { length: 10 }).notNull(),
+    quantityMl: int("quantityMl").notNull(),
+    /** Snapshot of pricePerLiterCents at the time of purchase */
+    pricePerLiterCents: int("pricePerLiterCents").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (t) => ({
+    userDateIdx: index("milk_entries_user_date_idx").on(
+      t.userId,
+      t.entryDate,
+    ),
+  }),
+);
+
+/** A month marked as paid. Totals are snapshotted at payment time. */
+export const milkPayments = mysqlTable(
+  "milk_payments",
+  {
+    id: serial("id").primaryKey(),
+    userId: bigint("userId", { mode: "number", unsigned: true }).notNull(),
+    /** Format YYYY-MM */
+    month: varchar("month", { length: 7 }).notNull(),
+    totalMl: int("totalMl").notNull(),
+    totalCents: int("totalCents").notNull(),
+    paidAt: timestamp("paidAt").defaultNow().notNull(),
+  },
+  (t) => ({
+    userMonthIdx: uniqueIndex("milk_payments_user_month_idx").on(
+      t.userId,
+      t.month,
+    ),
+  }),
+);
+
+export type MilkSettings = typeof milkSettings.$inferSelect;
+export type MilkEntry = typeof milkEntries.$inferSelect;
+export type MilkPayment = typeof milkPayments.$inferSelect;
