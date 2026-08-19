@@ -4,7 +4,12 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { Session } from "@contracts/constants";
 import { getSessionCookieOptions } from "./lib/cookies";
-import { createRouter, authedQuery, publicQuery } from "./middleware";
+import {
+  createRouter,
+  authedQuery,
+  milkmanQuery,
+  publicQuery,
+} from "./middleware";
 import { getDb } from "./queries/connection";
 import { users } from "@db/schema";
 import { eq } from "drizzle-orm";
@@ -70,6 +75,8 @@ const credentialsSchema = z.object({
     .min(6, "Password must be at least 6 characters")
     .max(128),
   displayName: z.string().max(64).optional(),
+  role: z.enum(["milkman", "client"]),
+  milkmanUsername: z.string().optional(),
 });
 
 export const authRouter = createRouter({
@@ -91,10 +98,27 @@ export const authRouter = createRouter({
         });
       }
 
+      let milkmanId: number | undefined;
+      if (input.role === "client" && input.milkmanUsername?.trim()) {
+        const milkmanUnionId = `local:${input.milkmanUsername.trim().toLowerCase()}`;
+        const milkman = await db.query.users.findFirst({
+          where: eq(users.unionId, milkmanUnionId),
+        });
+        if (!milkman || milkman.role !== "milkman") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "That milkman username was not found",
+          });
+        }
+        milkmanId = milkman.id;
+      }
+
       await db.insert(users).values({
         unionId,
         name: input.displayName?.trim() || input.username,
         passwordHash: hashPassword(input.password),
+        role: input.role,
+        milkmanId,
       });
 
       const token = await signSessionToken({ unionId, clientId: env.appId });
@@ -104,7 +128,13 @@ export const authRouter = createRouter({
 
   /** Classic login: username + password → session cookie. */
   login: publicQuery
-    .input(credentialsSchema.omit({ displayName: true }))
+    .input(
+      credentialsSchema.omit({
+        displayName: true,
+        role: true,
+        milkmanUsername: true,
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const db = getDb();
       const unionId = `local:${input.username.toLowerCase()}`;
@@ -128,6 +158,49 @@ export const authRouter = createRouter({
 
       const token = await signSessionToken({ unionId, clientId: env.appId });
       setSessionCookie(ctx.resHeaders, ctx.req.headers, unionId, token);
+      return { success: true };
+    }),
+
+  /** Milkman-only: create a new client account linked to the caller. */
+  addClient: milkmanQuery
+    .input(
+      z.object({
+        username: z
+          .string()
+          .min(3, "Username must be at least 3 characters")
+          .max(32, "Username must be at most 32 characters")
+          .regex(
+            /^[a-zA-Z0-9_.-]+$/,
+            "Only letters, numbers, dots, dashes, underscores",
+          ),
+        password: z
+          .string()
+          .min(6, "Password must be at least 6 characters")
+          .max(128),
+        displayName: z.string().max(64).optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = getDb();
+      const unionId = `local:${input.username.toLowerCase()}`;
+      const existing = await db.query.users.findFirst({
+        where: eq(users.unionId, unionId),
+      });
+      if (existing) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "That username is taken — try another",
+        });
+      }
+
+      await db.insert(users).values({
+        unionId,
+        name: input.displayName?.trim() || input.username,
+        passwordHash: hashPassword(input.password),
+        role: "client",
+        milkmanId: ctx.user.id,
+      });
+
       return { success: true };
     }),
 

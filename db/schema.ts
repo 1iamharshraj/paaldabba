@@ -16,17 +16,21 @@ export const users = mysqlTable("users", {
   unionId: varchar("unionId", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 320 }),
-  /** scrypt password hash (format: salt:hash, hex). Null for OAuth-only users. */
+  /** scrypt password hash (format: salt:hash, hex). */
   passwordHash: text("passwordHash"),
   avatar: text("avatar"),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  role: mysqlEnum("role", ["milkman", "client"]).default("client").notNull(),
+  milkmanId: bigint("milkmanId", { mode: "number", unsigned: true }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt")
     .defaultNow()
     .notNull()
     .$onUpdate(() => new Date()),
   lastSignInAt: timestamp("lastSignInAt").defaultNow().notNull(),
-});
+},
+(t) => ({
+  milkmanIdx: index("users_milkman_id_idx").on(t.milkmanId),
+}));
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
