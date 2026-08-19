@@ -55,6 +55,8 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 ├── Dockerfile
 ├── drizzle.config.ts
 ├── package.json
+├── vercel.json             # Vercel deployment config
+├── index.ts                # Vercel serverless function entry
 └── vite.config.ts
 ```
 
@@ -105,7 +107,7 @@ See `.env.example` for the full list:
 |--------|-------------|
 | `npm run dev` | Start Vite dev server with Hono backend |
 | `npm run build` | Build production client + server bundle |
-| `npm run start` | Run the production server (`dist/boot.js`) |
+| `npm run start` | Run the production server (`dist/server/boot.js`) |
 | `npm run check` | TypeScript type check |
 | `npm run lint` | ESLint |
 | `npm run format` | Prettier |
@@ -124,7 +126,7 @@ npm run build
 NODE_ENV=production npm start
 ```
 
-The server listens on `PORT` (default `3000`) and serves the built frontend from `dist/public`.
+The server listens on `PORT` (default `3000`) and serves the built frontend from `dist`.
 
 ### Docker
 
@@ -132,6 +134,26 @@ The server listens on `PORT` (default `3000`) and serves the built frontend from
 docker build -t paaldabba .
 docker run -p 3000:3000 --env-file .env paaldabba
 ```
+
+### Vercel
+
+The repo includes a `vercel.json` configured for a Vite frontend + Hono serverless function.
+
+1. Import the repo on [Vercel](https://vercel.com).
+2. Set the environment variables in the Vercel dashboard:
+   - `APP_ID` — any stable identifier, e.g. `paaldabba`
+   - `APP_SECRET` — a strong random string (used to sign session cookies)
+   - `DATABASE_URL` — MySQL connection string (PlanetScale, Aiven, etc.)
+3. Vercel will auto-detect Vite and run `npm run build`.
+   - Frontend static files are output to `dist/`
+   - Backend is bundled to `dist/server/boot.js` for Node/Docker
+   - Vercel deploys `index.ts` as the serverless function
+4. Push a branch; Vercel builds previews automatically.
+5. For local Vercel testing, install the [Vercel CLI](https://vercel.com/docs/cli) and run:
+
+   ```bash
+   vercel dev
+   ```
 
 ## Deployment notes
 
