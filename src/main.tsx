@@ -1,0 +1,20 @@
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router'
+import './index.css'
+import { TRPCProvider } from "@/providers/trpc"
+import App from './App.tsx'
+
+createRoot(document.getElementById('root')!).render(
+  <BrowserRouter>
+    <TRPCProvider>
+      <App />
+    </TRPCProvider>
+  </BrowserRouter>,
+)
+
+// PWA: register the service worker (production only — dev uses HMR)
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {})
+  })
+}

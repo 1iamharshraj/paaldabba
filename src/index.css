@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --absolute-blue: #1c4a96;
+    --void-black: #000000;
+    --system-white: #ffffff;
+    --border-color: #000000;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 218 68% 35%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 218 68% 35%;
+    --radius: 0rem;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--void-black);
+    color: var(--system-white);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    word-break: keep-all;
+  }
+}
+
+@layer components {
+  .milk-btn-primary {
+    background: linear-gradient(180deg, #fffdf6 0%, #f3ead6 100%);
+    color: #141311;
+    font-weight: 600;
+    box-shadow: 0 4px 24px rgba(245, 238, 220, 0.18), inset 0 1px 0 rgba(255,255,255,0.8);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+  .milk-btn-primary:hover { box-shadow: 0 6px 32px rgba(245, 238, 220, 0.3), inset 0 1px 0 rgba(255,255,255,0.9); }
+  .milk-btn-primary:active { transform: scale(0.96); }
+  .milk-btn-primary:disabled { opacity: 0.4; }
+
+  .milk-chip {
+    border: 1px solid rgba(245, 238, 220, 0.22);
+    color: #f5eedc;
+    background: rgba(245, 238, 220, 0.05);
+    transition: all 0.15s ease;
+  }
+  .milk-chip:hover { background: rgba(245, 238, 220, 0.12); }
+  .milk-chip:active { transform: scale(0.94); background: rgba(245, 238, 220, 0.18); }
+
+  @keyframes milk-wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .milk-wave {
+    animation: milk-wave 6s linear infinite;
+  }
+
+  @keyframes drip-in {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .drip-in { animation: drip-in 0.4s ease both; }
+
+  @keyframes splash-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+  .splash-pop { animation: splash-pop 0.35s ease; }
+}
+
+@layer components {
+  .font-serif-display {
+    font-family: "Geist Mono", 'Space Mono', ui-monospace, monospace;
+  }
+
+  .font-geist-mono {
+    font-family: "Geist Mono", 'Space Mono', ui-monospace, monospace;
+  }
+
+  .font-western-serif {
+    font-family: 'Times', 'Times New Roman', serif;
+  }
+
+  .font-mono-data {
+    font-family: 'Space Mono', 'Courier New', monospace;
+  }
+
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(6px) saturate(140%);
+    -webkit-backdrop-filter: blur(6px) saturate(140%);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.15) 20%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.15) 80%, rgba(255, 255, 255, 0.5) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0.25;
+  }
+
+  .liquid-glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse 90% 40% at 50% 0%, rgba(255, 255, 255, 0.18) 0%, transparent 55%), radial-gradient(ellipse 60% 35% at 65% 10%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .liquid-glass-strong {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .liquid-glass-strong::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.15) 20%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.15) 80%, rgba(255, 255, 255, 0.5) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0.3;
+  }
+
+  .liquid-glass-strong::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse 90% 40% at 50% 0%, rgba(255, 255, 255, 0.22) 0%, transparent 55%), radial-gradient(ellipse 60% 35% at 65% 10%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .grid-line-border {
+    border: 1px solid var(--border-color);
+  }
+}
