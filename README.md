@@ -31,7 +31,9 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 
 ```
 .
-├── api/                    # Hono / tRPC backend
+├── api/                    # Vercel serverless function entry
+│   └── index.ts            # re-exports the Hono app
+├── server/                 # Hono / tRPC backend
 │   ├── auth-router.ts      # username/password auth
 │   ├── boot.ts             # app entry + static file serving
 │   ├── context.ts          # tRPC context
@@ -146,7 +148,7 @@ The repo includes a `vercel.json` configured for a Vite frontend + Hono serverle
 3. Vercel will auto-detect Vite and run `npm run build`.
    - Frontend static files are output to `dist/`
    - Backend is bundled to `dist/server/boot.js` for Node/Docker
-   - Vercel deploys `api/index.ts` as the serverless function
+   - Vercel deploys `api/index.ts` as the only serverless function; the backend source lives in `server/`
 4. Push a branch; Vercel builds previews automatically.
 5. For local Vercel testing, install the [Vercel CLI](https://vercel.com/docs/cli) and run:
 
