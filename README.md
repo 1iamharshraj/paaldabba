@@ -146,7 +146,7 @@ The repo includes a `vercel.json` configured for a Vite frontend + Hono serverle
 3. Vercel will auto-detect Vite and run `npm run build`.
    - Frontend static files are output to `dist/`
    - Backend is bundled to `dist/server/boot.js` for Node/Docker
-   - Vercel deploys `api/index.js` as the serverless function (bundled from `vercel/api-index.ts` during the build)
+   - Vercel deploys `api/index.ts` as the serverless function
 4. Push a branch; Vercel builds previews automatically.
 5. For local Vercel testing, install the [Vercel CLI](https://vercel.com/docs/cli) and run:
 
