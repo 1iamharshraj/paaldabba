@@ -1,6 +1,6 @@
-import { authRouter } from "./auth-router";
-import { milkRouter } from "./milkRouter";
-import { createRouter, publicQuery } from "./middleware";
+import { authRouter } from "./auth-router.js";
+import { milkRouter } from "./milkRouter.js";
+import { createRouter, publicQuery } from "./middleware.js";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),

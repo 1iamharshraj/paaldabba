@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { users } from "./schema";
+import { users } from "./schema.js";
 
 export const usersRelations = relations(users, ({ one, many }) => ({
   milkman: one(users, {

@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { createRouter, authedQuery, milkmanQuery } from "./middleware";
-import { getDb } from "./queries/connection";
-import { milkEntries, milkPayments, milkSettings, users } from "@db/schema";
-import type { User } from "@db/schema";
+import { createRouter, authedQuery, milkmanQuery } from "./middleware.js";
+import { getDb } from "./queries/connection.js";
+import { milkEntries, milkPayments, milkSettings, users } from "../db/schema.js";
+import type { User } from "../db/schema.js";
 
 const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 const DATE_RE = /^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/;

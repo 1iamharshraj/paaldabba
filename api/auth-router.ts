@@ -2,19 +2,19 @@ import * as cookie from "cookie";
 import * as crypto from "crypto";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { Session } from "@contracts/constants";
-import { getSessionCookieOptions } from "./lib/cookies";
+import { Session } from "../contracts/constants.js";
+import { getSessionCookieOptions } from "./lib/cookies.js";
 import {
   createRouter,
   authedQuery,
   milkmanQuery,
   publicQuery,
-} from "./middleware";
-import { getDb } from "./queries/connection";
-import { users } from "@db/schema";
+} from "./middleware.js";
+import { getDb } from "./queries/connection.js";
+import { users } from "../db/schema.js";
 import { eq } from "drizzle-orm";
-import { signSessionToken } from "./lib/session";
-import { env } from "./lib/env";
+import { signSessionToken } from "./lib/session.js";
+import { env } from "./lib/env.js";
 
 // ---- password hashing (scrypt, node:crypto) ----
 

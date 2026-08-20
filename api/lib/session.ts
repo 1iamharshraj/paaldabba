@@ -1,5 +1,5 @@
 import * as jose from "jose";
-import { env } from "./env";
+import { env } from "./env.js";
 
 const JWT_ALG = "HS256";
 
