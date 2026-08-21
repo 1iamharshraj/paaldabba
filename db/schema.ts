@@ -1,17 +1,19 @@
 import {
-  mysqlTable,
-  mysqlEnum,
+  pgTable,
+  pgEnum,
   serial,
   varchar,
   text,
   timestamp,
   bigint,
-  int,
+  integer,
   uniqueIndex,
   index,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 
-export const users = mysqlTable("users", {
+export const roleEnum = pgEnum("role", ["milkman", "client"]);
+
+export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   unionId: varchar("unionId", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
@@ -19,8 +21,8 @@ export const users = mysqlTable("users", {
   /** scrypt password hash (format: salt:hash, hex). */
   passwordHash: text("passwordHash"),
   avatar: text("avatar"),
-  role: mysqlEnum("role", ["milkman", "client"]).default("client").notNull(),
-  milkmanId: bigint("milkmanId", { mode: "number", unsigned: true }),
+  role: roleEnum("role").default("client").notNull(),
+  milkmanId: bigint("milkmanId", { mode: "number" }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt")
     .defaultNow()
@@ -38,12 +40,12 @@ export type InsertUser = typeof users.$inferInsert;
 // ---- MilkTrack tables ----
 
 /** Per-user configuration: milk price (in currency cents per litre) + currency code. */
-export const milkSettings = mysqlTable(
+export const milkSettings = pgTable(
   "milk_settings",
   {
     id: serial("id").primaryKey(),
-    userId: bigint("userId", { mode: "number", unsigned: true }).notNull(),
-    pricePerLiterCents: int("pricePerLiterCents").notNull().default(6000),
+    userId: bigint("userId", { mode: "number" }).notNull(),
+    pricePerLiterCents: integer("pricePerLiterCents").notNull().default(6000),
     currency: varchar("currency", { length: 8 }).notNull().default("INR"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt")
@@ -57,16 +59,16 @@ export const milkSettings = mysqlTable(
 );
 
 /** A single milk purchase. Price is snapshotted per entry so rate changes don't rewrite history. */
-export const milkEntries = mysqlTable(
+export const milkEntries = pgTable(
   "milk_entries",
   {
     id: serial("id").primaryKey(),
-    userId: bigint("userId", { mode: "number", unsigned: true }).notNull(),
+    userId: bigint("userId", { mode: "number" }).notNull(),
     /** Local calendar day, format YYYY-MM-DD */
     entryDate: varchar("entryDate", { length: 10 }).notNull(),
-    quantityMl: int("quantityMl").notNull(),
+    quantityMl: integer("quantityMl").notNull(),
     /** Snapshot of pricePerLiterCents at the time of purchase */
-    pricePerLiterCents: int("pricePerLiterCents").notNull(),
+    pricePerLiterCents: integer("pricePerLiterCents").notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (t) => ({
@@ -78,15 +80,15 @@ export const milkEntries = mysqlTable(
 );
 
 /** A month marked as paid. Totals are snapshotted at payment time. */
-export const milkPayments = mysqlTable(
+export const milkPayments = pgTable(
   "milk_payments",
   {
     id: serial("id").primaryKey(),
-    userId: bigint("userId", { mode: "number", unsigned: true }).notNull(),
+    userId: bigint("userId", { mode: "number" }).notNull(),
     /** Format YYYY-MM */
     month: varchar("month", { length: 7 }).notNull(),
-    totalMl: int("totalMl").notNull(),
-    totalCents: int("totalCents").notNull(),
+    totalMl: integer("totalMl").notNull(),
+    totalCents: integer("totalCents").notNull(),
     paidAt: timestamp("paidAt").defaultNow().notNull(),
   },
   (t) => ({

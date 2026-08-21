@@ -19,7 +19,7 @@ async function getOrCreateSettings(userId: number) {
   await db
     .insert(milkSettings)
     .values({ userId })
-    .onDuplicateKeyUpdate({ set: { userId } });
+    .onConflictDoNothing({ target: milkSettings.userId });
   const created = await db.query.milkSettings.findFirst({
     where: eq(milkSettings.userId, userId),
   });
@@ -168,7 +168,7 @@ export const milkRouter = createRouter({
           quantityMl: input.quantityMl,
           pricePerLiterCents: settings.pricePerLiterCents,
         })
-        .$returningId();
+        .returning({ id: milkEntries.id });
       return getDb().query.milkEntries.findFirst({
         where: eq(milkEntries.id, id),
       });
@@ -278,7 +278,8 @@ export const milkRouter = createRouter({
       await db
         .insert(milkPayments)
         .values({ userId: target.id, month: input.month, totalMl, totalCents })
-        .onDuplicateKeyUpdate({
+        .onConflictDoUpdate({
+          target: [milkPayments.userId, milkPayments.month],
           set: { totalMl, totalCents, paidAt: new Date() },
         });
       return { paid: true };

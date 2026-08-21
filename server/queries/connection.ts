@@ -1,18 +1,20 @@
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres, { type Sql } from "postgres";
 import { env } from "../lib/env.js";
 import * as schema from "../../db/schema.js";
 import * as relations from "../../db/relations.js";
 
 const fullSchema = { ...schema, ...relations };
 
-let instance: ReturnType<typeof drizzle<typeof fullSchema>>;
+type DbInstance = ReturnType<typeof drizzle<typeof fullSchema>>;
+
+let instance: DbInstance;
+let client: Sql;
 
 export function getDb() {
   if (!instance) {
-    instance = drizzle(env.databaseUrl, {
-      mode: "planetscale",
-      schema: fullSchema,
-    });
+    client = postgres(env.databaseUrl);
+    instance = drizzle(client, { schema: fullSchema });
   }
   return instance;
 }

@@ -44,7 +44,7 @@ A full-stack, installable PWA for tracking daily milk purchases. Log every pour 
 |-------|------|
 | Frontend | React 19, TypeScript, Vite, React Router v7, Tailwind CSS v3, shadcn/ui, TanStack Query, tRPC |
 | Backend | Hono, tRPC, Node.js |
-| Database | MySQL / PlanetScale, Drizzle ORM |
+| Database | PostgreSQL / Supabase, Drizzle ORM |
 | Auth | scrypt password hashing, JWT session cookies (`sid`) |
 | Build | Vite (client) + esbuild (server bundle) |
 | Container | Dockerfile multi-stage build |
@@ -128,7 +128,7 @@ See `.env.example` for the full list:
 |----------|---------|
 | `APP_ID` | Application ID |
 | `APP_SECRET` | Used to sign JWT session cookies |
-| `DATABASE_URL` | MySQL connection string, e.g. `mysql://user:pass@host:port/db` |
+| `DATABASE_URL` | PostgreSQL connection string, e.g. `postgresql://user:pass@host:port/db` |
 
 ---
 
@@ -180,7 +180,7 @@ The repo is configured for Vite + a single Hono serverless function.
 2. Set the environment variables in the Vercel dashboard:
    - `APP_ID` — any stable identifier, e.g. `paaldabba`
    - `APP_SECRET` — a strong random string (used to sign session cookies)
-   - `DATABASE_URL` — MySQL connection string (PlanetScale, Aiven, TiDB, etc.)
+   - `DATABASE_URL` — PostgreSQL connection string (Supabase, Aiven, local Postgres, etc.)
 3. Vercel will auto-detect Vite and run `npm run build`.
    - Frontend static files are output to `dist/`
    - Backend is bundled to `dist/server/boot.js` for Node/Docker
@@ -229,8 +229,9 @@ The project uses `"type": "module"` with Node16 module resolution. Relative impo
 
 ### Database connection errors
 
-- Verify `DATABASE_URL` includes the correct protocol (`mysql://` or `mysqls://`).
-- Some providers require `ssl={"rejectUnauthorized":true}` in the connection string query params.
+- Verify `DATABASE_URL` includes the correct protocol (`postgresql://`).
+- For Supabase, use the connection string from **Project Settings → Database → Connection string → URI**, and append `?sslmode=require`.
+- Example: `postgresql://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres?sslmode=require`
 
 ### npm install fails with a mirror registry error
 
